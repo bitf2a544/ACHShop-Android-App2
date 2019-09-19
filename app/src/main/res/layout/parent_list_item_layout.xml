@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:background="@android:color/white"
+    android:layout_marginBottom="1dp"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:background="@android:color/holo_red_light"
+        android:layout_width="match_parent"
+        android:layout_height="45dp">
+
+        <TextView
+            android:id="@+id/headingTVD"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:text="None"
+            android:textColor="@android:color/white"
+            android:textSize="16dp"
+            />
+
+        <ImageView
+            android:id="@+id/rightIVD"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:foregroundGravity="center"
+            android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+            android:tint="@android:color/white" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/child_recyclerViewD"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:scrollbars="vertical"
+        android:visibility="gone" />
+
+</LinearLayout>
