@@ -2,57 +2,100 @@ package com.zeeshanmac.zeeshan.spoofandroidapp.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.zeeshanmac.zeeshan.spoofandroidapp.Auth.MatchTabbedActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.R;
+import com.zeeshanmac.zeeshan.spoofandroidapp.model.Items;
+import com.zeeshanmac.zeeshan.spoofandroidapp.util.TransparentProgressDialog;
+import com.zeeshanmac.zeeshan.spoofandroidapp.util.Utility;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import eu.inloop.localmessagemanager.LocalMessage;
+import eu.inloop.localmessagemanager.LocalMessageCallback;
+import eu.inloop.localmessagemanager.LocalMessageManager;
 
-public class DashBoardFragment extends Fragment {
+import static com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity.selectedItemsList;
 
+public class DashBoardFragment extends Fragment implements LocalMessageCallback {
 
-    @BindView(R.id.btnNextD)
-    Button btnNext;
-    @BindView(R.id.shareTextBtnD)
-    Button shareTextBtn;
+    public  static final int UPDATE_ARTICLES = 101;
+    public  static final int UPDATE_ITEM_SELECTED_LIST = 102;
+    @BindView(R.id.articleTVD)
+    TextView articleTV;
+    @BindView(R.id.shareIVD)
+    ImageView shareTextIV;
 
-
+    TransparentProgressDialog transparentProgressDialog;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.e("onCreateView","inside_Dash Fragment");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dash_board, container, false);
         ButterKnife.bind(this, view);
 
+        LocalMessageManager.getInstance().addListener(this);
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
+        transparentProgressDialog = new TransparentProgressDialog(getActivity(), R.drawable.prosessing_icon);
+
+        articleTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 ((MainActivity) getActivity()).updateFragment("Shopping");
                 // ((YourActivityClassName)getActivity()).yourPublicMethod();
 
+//                final FragmentManager fragmentManager = getFragmentManager();
+//
+//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//                // Get fragment one if exist.
+//                Fragment fragmentOne = new ShoppingFragment();
+//
+//                fragmentTransaction.replace(R.id.containerFLD, fragmentOne, "ShoppingFragment_1");
+//
+//                // Do not add fragment three in back stack.
+//                fragmentTransaction.addToBackStack(null);
+//                fragmentTransaction.commit();
+
+
+
             }
         });
-        shareTextBtn.setOnClickListener(new View.OnClickListener() {
+        shareTextIV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
                 StringBuilder stringBuilder = new StringBuilder();
 
-                for (int i = 0; i < MainActivity.selectedItemsList.size(); i++) {
+                for (int i = 0; i < selectedItemsList.size(); i++) {
 
-                    String name = MainActivity.selectedItemsList.get(i).getItemName();
-                    int quantity = MainActivity.selectedItemsList.get(i).getItemQuantity();
+                    String name = selectedItemsList.get(i).getItemName();
+                    int quantity = selectedItemsList.get(i).getItemQuantity();
                     stringBuilder.append(name + " = " + quantity + "\n");
 
                 }
@@ -63,14 +106,21 @@ public class DashBoardFragment extends Fragment {
                 sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Subject Here");
                 sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
                 startActivity(Intent.createChooser(sharingIntent, "Share Using"));
-
             }
         });
+        getRecordsFromFirebaseDB();
+   //     articleTV.setText(selectedItemsList.size() + " articles");
 
 
+        Log.e("onCreateView","inside_Dash Fragment_1");
         return view;
     }
 
+    @Override
+    public void onResume() {
+        Log.e("onResume","inside_Dash Fragment_2");
+        super.onResume();
+    }
 
     @Override
     public void onDestroyView() {
@@ -78,7 +128,54 @@ public class DashBoardFragment extends Fragment {
 
     }
 
+    void getRecordsFromFirebaseDB() {
+        Log.e("getDataFirebaseDB:", "inside");
+        if (Utility.isNetworkAvailable(getActivity())) {
+            transparentProgressDialog.show();
+            try {
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
+                database.child("Items").child("-LmKL3ucfS0hf6g71W8u").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Log.e("getDataFirebaseDB_DC:", "inside");
+                        List<Items> items = new ArrayList<>();
+                        for (DataSnapshot noteDataSnapshot : dataSnapshot.getChildren()) {
+                            Items items1 = noteDataSnapshot.getValue(Items.class);
+                            items1.setKey(noteDataSnapshot.getKey().toString());
+                            items.add(items1);
+                        }
 
+                        Log.e("Size:", items.size() + "_zz");
+                        selectedItemsList = items;
+                        articleTV.setText(selectedItemsList.size() + " articles");
+
+                        transparentProgressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e("onCancelled:", "inside");
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            Toast.makeText(getActivity(), "No Network Available!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void handleMessage(@NonNull final LocalMessage msg) {
+        switch (msg.getId())
+        {
+            case UPDATE_ARTICLES : {
+                articleTV.setText(selectedItemsList.size() + " articles");
+            }
+            break;
+        }
+    }
 
 }

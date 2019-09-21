@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -20,8 +22,15 @@ import com.zeeshanmac.zeeshan.spoofandroidapp.util.Utility;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import eu.inloop.localmessagemanager.LocalMessage;
+import eu.inloop.localmessagemanager.LocalMessageCallback;
+import eu.inloop.localmessagemanager.LocalMessageManager;
 
-public class EditItemActivity extends AppCompatActivity {
+import static com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity.selectedItemsList;
+import static com.zeeshanmac.zeeshan.spoofandroidapp.fragment.DashBoardFragment.UPDATE_ARTICLES;
+import static com.zeeshanmac.zeeshan.spoofandroidapp.fragment.DashBoardFragment.UPDATE_ITEM_SELECTED_LIST;
+
+public class EditItemActivity extends AppCompatActivity implements LocalMessageCallback {
 
     @BindView(R.id.leftIVD)
     ImageView leftIV;
@@ -46,6 +55,7 @@ public class EditItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_item_activity);
         ButterKnife.bind(this);
+        LocalMessageManager.getInstance().addListener(this);
 
         transparentProgressDialog = new TransparentProgressDialog(this, R.drawable.prosessing_icon);
 
@@ -75,11 +85,24 @@ public class EditItemActivity extends AppCompatActivity {
                             child(selectedItem.getKey()).child("itemQuantity").setValue(quantity);
 
 
-                    database.child("Items").child("-LmKL3ucfS0hf6g71W8u").
-                            child(selectedItem.getKey()).child("itemDescription").setValue(desc);
+//                    database.child("Items").child("-LmKL3ucfS0hf6g71W8u").
+//                            child(selectedItem.getKey()).child("itemDescription").setValue(desc);
 
-                    transparentProgressDialog.dismiss();
-                    Toast.makeText(EditItemActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+                    database.child("Items").child("-LmKL3ucfS0hf6g71W8u").
+                            child(selectedItem.getKey()).child("itemDescription").setValue(desc).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            LocalMessageManager.getInstance().send(UPDATE_ITEM_SELECTED_LIST);
+                            Toast.makeText(EditItemActivity.this, "Updated", Toast.LENGTH_SHORT).show();
+
+                            transparentProgressDialog.dismiss();
+                        }
+                    });
+
+
+
+
 
                 } else {
                     Toast.makeText(EditItemActivity.this, "No Network Available!", Toast.LENGTH_SHORT).show();
@@ -95,6 +118,16 @@ public class EditItemActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
+    }
+    @Override
+    public void handleMessage(@NonNull final LocalMessage msg) {
+//        switch (msg.getId())
+//        {
+//            case UPDATE_ITEM_SELECTED_LIST : {
+//                articleTV.setText(selectedItemsList.size() + " articles");
+//            }
+//            break;
+//        }
     }
 
 

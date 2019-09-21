@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#EA1D24</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="light_red_color">#ffff4444</color>
     <color name="dark_gray_color">#aaa</color>
     <color name="lighter_gray2">#ddd</color>
+    <color name="input_login_hint">#999999</color>
+    <color name="white">#FFFEFE</color>
+
+
 </resources>

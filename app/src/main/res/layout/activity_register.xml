@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.zeeshanmac.zeeshan.spoofandroidapp.Auth.RegisterActivity">
+
+    <RelativeLayout
+        android:id="@+id/relative_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/iv_back_arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginLeft="6dp"
+            android:src="@mipmap/ic_back_arrow"
+            android:tint="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/match_toolbar_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Page d'inscription"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
+            android:padding="6dp"
+            android:textAlignment="textStart"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"
+        android:padding="@dimen/activity_horizontal_margin">
+
+
+        <EditText
+            android:id="@+id/register_name"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/inputs"
+            android:hint="Pseudo"
+            android:padding="8dp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/register_email"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="10dp"
+            android:hint="Email"
+            android:padding="8dp"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/inputs"/>
+
+        <EditText
+            android:id="@+id/register_password"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/inputs"
+            android:hint="Mot de passe"
+            android:imeOptions="actionUnspecified"
+            android:inputType="textPassword"
+            android:padding="8dp"
+            android:shadowColor="@color/input_login_hint"
+            android:singleLine="true" />
+
+        <EditText
+            android:id="@+id/register_confirmpassword"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/inputs"
+            android:hint="Confirmez le mot de passe"
+            android:inputType="textPassword"
+            android:padding="8dp" />
+
+
+
+        <Button
+            android:id="@+id/create_account_button"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/button"
+            android:text="Valider"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+            android:padding="3dp"
+            />
+
+    </LinearLayout>
+</LinearLayout>

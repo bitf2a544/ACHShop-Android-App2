@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,29 +48,39 @@ public class SearchFragment extends Fragment {
     @BindView(R.id.searcIVD)
     ImageView searchIV;
 
+  //  @BindView(R.id.rightIVD)
+    //ImageView rightIV;
+
     TransparentProgressDialog transparentProgressDialog;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.e("onCreateView","inside_Search Fragment");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
-
         transparentProgressDialog = new TransparentProgressDialog(getActivity(), R.drawable.prosessing_icon);
-
-        childListAdapter = new ChildListAdapter(getActivity(), searchedItemsList, null);
-
-        topRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 3);
-        topRecyclerView.setLayoutManager(mLayoutManager);
-        topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
-        topRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        topRecyclerView.setAdapter(childListAdapter);
 
         // preparing list data
         prepareListData();
+
+
+     //   rightIV.setVisibility(View.INVISIBLE);
+
+
+//        childListAdapter = new ChildListAdapter(getActivity(), searchedItemsList, null);
+//
+//        topRecyclerView.setHasFixedSize(true);
+//        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 3);
+//        topRecyclerView.setLayoutManager(mLayoutManager);
+//        topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+//        topRecyclerView.setItemAnimator(new DefaultItemAnimator());
+//
+//        topRecyclerView.setAdapter(childListAdapter);
+
+
 
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +89,9 @@ public class SearchFragment extends Fragment {
                 transparentProgressDialog.show();
                 //Traversal
                 boolean flag = false;
+
+
+                Log.e("Size_",childGroceryItemList.size()+"_zz");
                 for (Items item : childGroceryItemList) {
                     String nameStr = item.getItemName().toLowerCase();
                     String queryStr = searchET.getText().toString().toLowerCase();
@@ -93,11 +107,14 @@ public class SearchFragment extends Fragment {
                 if (flag == false) {
                     Toast.makeText(getActivity(), "Item Not found!", Toast.LENGTH_SHORT).show();
                     searchedItemsList.clear();
+                    childListAdapter.updateList(searchedItemsList);
                 }
                 transparentProgressDialog.dismiss();
 
             }
         });
+
+        Log.e("onCreateView","inside_Search Fragment_2");
         return view;
     }
 
@@ -106,8 +123,20 @@ public class SearchFragment extends Fragment {
         super.onDestroyView();
     }
 
+    private void initRecyclerView(){
+        childListAdapter = new ChildListAdapter(getActivity(), childGroceryItemList, null);
+
+        topRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
+        topRecyclerView.setLayoutManager(mLayoutManager);
+        topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+        topRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        topRecyclerView.setAdapter(childListAdapter);
+
+    }
     private void prepareListData() {
-       // List<Items> childGroceryItemList = new ArrayList<Items>();
+
         childGroceryItemList.add(new Items("1", "Abricot", 0, "desc1", false));
         childGroceryItemList.add(new Items("1", "Ail", 0, "desc1", false));
         childGroceryItemList.add(new Items("1", "Ananas", 0, "desc1", false));
@@ -439,6 +468,11 @@ public class SearchFragment extends Fragment {
         childGroceryItemList.add(new Items("4", "Tondeuse", 0, "None", false));
         childGroceryItemList.add(new Items("4", "Vis", 0, "None", false));
 
-        searchedItemsList = childGroceryItemList;
+       // searchedItemsList = childGroceryItemList;
+      //  childListAdapter.notifyDataSetChanged();
+
+        initRecyclerView();
+
+
     }
 }

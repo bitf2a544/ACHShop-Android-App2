@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,8 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import eu.inloop.localmessagemanager.LocalMessage;
+import eu.inloop.localmessagemanager.LocalMessageCallback;
+import eu.inloop.localmessagemanager.LocalMessageManager;
 
-public class ShoppingFragment extends Fragment implements ChildListAdapter.onChildClickListener {
+import static com.zeeshanmac.zeeshan.spoofandroidapp.fragment.DashBoardFragment.UPDATE_ITEM_SELECTED_LIST;
+
+public class ShoppingFragment extends Fragment implements ChildListAdapter.onChildClickListener, LocalMessageCallback {
 
     TransparentProgressDialog transparentProgressDialog;
     ParentExpandableAdapter expandableAdapter;
@@ -57,10 +63,14 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Log.e("onCreateView","inside_Shopping Fragment");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_shopping, container, false);
         ButterKnife.bind(this, view);
         transparentProgressDialog = new TransparentProgressDialog(getActivity(), R.drawable.prosessing_icon);
+
+        LocalMessageManager.getInstance().addListener(this);
 
         initRecyclerView();
 
@@ -72,13 +82,14 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
 
       //  prepareListData();
 
-
+        Log.e("onCreateView","inside_Shopping Fragment_2");
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
         prepareListData();
     }
 
@@ -98,7 +109,7 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
         topRecyclerView.setHasFixedSize(true);
 
         // RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(this);
-        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(getActivity(), 3);
+        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(getActivity(), 4);
         topRecyclerView.setLayoutManager(mLayoutManager1);
         topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         topRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -110,6 +121,7 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
         Log.e("getDataFirebaseDB:", "inside");
         if (Utility.isNetworkAvailable(getActivity())) {
             transparentProgressDialog.show();
+
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
             database.child("Items").child("-LmKL3ucfS0hf6g71W8u").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -444,18 +456,14 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
         childGroceryItemList10.add(new Items("4", "Eau minerale", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Eau tonique", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Energy Drink", 0, "None", false));
-        childGroceryItemList10.add(new Items("4", "Gin", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Grains de cafe", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Jus d'orange", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Jus de fruits", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Jus de pomme", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "Limonade", 0, "None", false));
-        childGroceryItemList10.add(new Items("4", "Prosecco", 0, "None", false));
-        childGroceryItemList10.add(new Items("4", "Sirop", 0, "None", false));
-        childGroceryItemList10.add(new Items("4", "The", 0, "None", false));
         childGroceryItemList10.add(new Items("4", "The froid", 0, "None", false));
 
-        parentDataList.add(new ParentCellData("Boissons et Tabac", false, childGroceryItemList10));
+        parentDataList.add(new ParentCellData("Boissons", false, childGroceryItemList10));
 
 
         List<Items> childGroceryItemList11 = new ArrayList<Items>();
@@ -561,8 +569,44 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
 
         parentDataList.add(new ParentCellData("Artisanat et jardin", false, childGroceryItemList13));
 
-        expandableAdapter.updateList(parentDataList);
 
+
+        for(int i =0;i< parentDataList.size();i++){
+
+            ParentCellData parentCellDataObj = parentDataList.get(i);
+
+            for(int i2 =0;i2< parentCellDataObj.getChildGroceryItemList().size();i2++)
+            {
+                Items item = parentCellDataObj.getChildGroceryItemList().get(i2);
+
+
+                for(int i3 =0;i3< MainActivity.selectedItemsList.size();i3++)
+                {
+                    Items selectedItem = MainActivity.selectedItemsList.get(i3);
+
+                    if( selectedItem.getIsChecked() != null &&
+                        selectedItem.getIsChecked() &&
+                            item.getItemName().toLowerCase().equals(selectedItem.getItemName().toLowerCase())){
+
+
+                        Log.e("Found","true="+item.getItemName());
+
+                        item.setIsChecked(true);
+
+                      //  parentCellDataObj.getChildGroceryItemList().set(i2,item);
+                        parentDataList.get(i).getChildGroceryItemList().set(i2,item);
+
+
+                    }
+
+                }
+
+
+                }
+
+            }
+
+        expandableAdapter.updateList(parentDataList);
 
     }
 
@@ -631,6 +675,18 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
                     });
         } else {
             Toast.makeText(getActivity(), "No Network Available!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    @Override
+    public void handleMessage(@NonNull final LocalMessage msg) {
+        switch (msg.getId())
+        {
+            case UPDATE_ITEM_SELECTED_LIST : {
+              getRecordsFromFirebaseDB();
+            }
+            break;
         }
     }
 

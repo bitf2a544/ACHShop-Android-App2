@@ -6,6 +6,56 @@
     android:orientation="vertical"
     android:weightSum="4">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="2dp"
+        android:background="@color/light_red_color">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:id="@+id/leftIVD"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
+
+            <TextView
+                android:id="@+id/centerTVD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+
+                android:gravity="center"
+                android:text="Searching"
+                android:textColor="@android:color/white"
+                android:textSize="24dp"
+                android:layout_toLeftOf="@+id/rightIVD"
+                android:layout_toRightOf="@+id/leftIVD"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/rightIVD"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:visibility="invisible"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="12dp"
+                android:src="@drawable/ic_add_black_24dp" />
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.Toolbar>
+
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
