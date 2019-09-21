@@ -56,7 +56,7 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/inputs"
             android:hint="Email"
-            android:text="adyyar444@gmail.com"
+
             android:inputType="textEmailAddress"
             android:padding="8dp"
             android:textColorHint="@color/input_login_hint" />
@@ -69,11 +69,13 @@
             android:layout_marginBottom="10dp"
             android:background="@drawable/inputs"
             android:hint="Mot de passe"
-            android:text="123456789"
+
             android:inputType="textPassword"
             android:padding="8dp"
             android:textColorHint="@color/input_login_hint" />
 
+        <!--android:text="adyyar444@gmail.com"-->
+        <!--android:text="123456789"-->
         <RadioButton
             android:id="@+id/radioButton"
             android:layout_width="match_parent"
