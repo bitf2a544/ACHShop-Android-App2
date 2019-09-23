@@ -1,7 +1,10 @@
 package com.zeeshanmac.zeeshan.spoofandroidapp.fragment;
 
+import android.graphics.Movie;
 import android.os.Bundle;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
@@ -16,12 +19,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.R;
 import com.zeeshanmac.zeeshan.spoofandroidapp.adapter.ChildListAdapter;
 import com.zeeshanmac.zeeshan.spoofandroidapp.adapter.SelectedItemsAdapter;
 import com.zeeshanmac.zeeshan.spoofandroidapp.model.Items;
 import com.zeeshanmac.zeeshan.spoofandroidapp.model.ParentCellData;
+import com.zeeshanmac.zeeshan.spoofandroidapp.util.RecyclerTouchListener;
 import com.zeeshanmac.zeeshan.spoofandroidapp.util.TransparentProgressDialog;
+import com.zeeshanmac.zeeshan.spoofandroidapp.util.Utility;
 
 
 import java.util.ArrayList;
@@ -30,7 +39,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements ChildListAdapter.onChildClickListener {
 
     ChildListAdapter childListAdapter;
 
@@ -124,10 +133,10 @@ public class SearchFragment extends Fragment {
     }
 
     private void initRecyclerView(){
-        childListAdapter = new ChildListAdapter(getActivity(), childGroceryItemList, null);
+        childListAdapter = new ChildListAdapter(getActivity(), childGroceryItemList, this);
 
         topRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 4);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 3);
         topRecyclerView.setLayoutManager(mLayoutManager);
         topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         topRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -475,4 +484,35 @@ public class SearchFragment extends Fragment {
 
 
     }
+
+    @Override
+    public void onClick(Items childGroceryItem) {
+        addItemInFireBaseDB(childGroceryItem);
+    }
+
+    public void addItemInFireBaseDB(final Items item) {
+        if (Utility.isNetworkAvailable(getActivity())) {
+            transparentProgressDialog.show();
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+            String insertedItemKey = database.child("Items").child("-LmKL3ucfS0hf6g71W8u").push().getKey();
+            item.setKey(insertedItemKey);
+
+            database.child("Items").child("-LmKL3ucfS0hf6g71W8u").child(insertedItemKey).setValue(item, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError,
+                                       @NonNull DatabaseReference databaseReference) {
+                    Log.e("dataInserted:", "inside:");
+                    transparentProgressDialog.cancel();
+                    MainActivity.selectedItemsList.add(item);
+                    childListAdapter.updateList(MainActivity.selectedItemsList);
+                    Toast.makeText(getActivity(), "Item saved successfully!", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } else {
+            Toast.makeText(getActivity(), "No Network Available!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

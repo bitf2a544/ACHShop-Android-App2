@@ -1,5 +1,7 @@
 package com.zeeshanmac.zeeshan.spoofandroidapp;
 
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,9 +15,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.zeeshanmac.zeeshan.spoofandroidapp.adapter.ChildListAdapter;
 import com.zeeshanmac.zeeshan.spoofandroidapp.model.Items;
 import com.zeeshanmac.zeeshan.spoofandroidapp.util.TransparentProgressDialog;
+import com.zeeshanmac.zeeshan.spoofandroidapp.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +32,7 @@ import eu.inloop.localmessagemanager.LocalMessageManager;
 
 import static com.zeeshanmac.zeeshan.spoofandroidapp.fragment.DashBoardFragment.UPDATE_ARTICLES;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements ChildListAdapter.onChildClickListener {
 
     ChildListAdapter childListAdapter;
 
@@ -104,7 +110,7 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        childListAdapter = new ChildListAdapter(this, childGroceryItemList, null);
+        childListAdapter = new ChildListAdapter(this, childGroceryItemList, this);
 
         topRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 4);
@@ -455,5 +461,35 @@ public class SearchActivity extends AppCompatActivity {
         initRecyclerView();
 
 
+    }
+
+
+    @Override
+    public void onClick(Items childGroceryItem) {
+        addItemInFireBaseDB(childGroceryItem);
+    }
+
+    public void addItemInFireBaseDB(final Items item) {
+        if (Utility.isNetworkAvailable(this)) {
+            transparentProgressDialog.show();
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+            String insertedItemKey = database.child("Items").child("-LmKL3ucfS0hf6g71W8u").push().getKey();
+            item.setKey(insertedItemKey);
+
+            database.child("Items").child("-LmKL3ucfS0hf6g71W8u").child(insertedItemKey).setValue(item, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError,
+                                       @NonNull DatabaseReference databaseReference) {
+                    Log.e("dataInserted:", "inside:");
+                    transparentProgressDialog.cancel();
+                    MainActivity.selectedItemsList.add(item);
+                   // childListAdapter.updateList(MainActivity.selectedItemsList);
+                }
+            });
+
+        } else {
+            Toast.makeText(this, "No Network Available!", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    android:id="@+id/lD"
+    android:layout_width="match_parent"
+    android:layout_height="200dp"
+    android:background="@color/lighter_gray2"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/dashBoardIVD"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/download" />
+
+    <TextView
+        android:id="@+id/shoppingTVD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:text="Shopping"
+        android:textColor="@color/white"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/workplaceTVD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/shoppingTVD"
+        android:paddingLeft="10dp"
+        android:text="Workplace"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/articleTVD"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/workplaceTVD"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/light_red_color"
+        android:padding="10dp"
+        android:text="8 articles"
+        android:textColor="@color/white"
+        android:textSize="12dp"
+        android:textStyle="bold" />
+
+
+    <ImageView
+        android:id="@+id/shareIVD"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/share_icon" />
+</RelativeLayout>

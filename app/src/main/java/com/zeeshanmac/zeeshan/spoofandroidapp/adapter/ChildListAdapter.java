@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zeeshanmac.zeeshan.spoofandroidapp.R;
+import com.zeeshanmac.zeeshan.spoofandroidapp.SearchActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.model.Items;
 
 import java.util.List;
@@ -55,10 +56,14 @@ public class ChildListAdapter extends RecyclerView.Adapter<ChildListAdapter.MyVi
             public void onClick(View v) {
                 if (item.getIsChecked()) {
                     item.setIsChecked(false);
-                    holder.labelTV.setBackgroundColor(context.getResources().getColor(R.color.dark_gray_color));
+                    if(onChildClickListener instanceof SearchActivity == false) {
+                        holder.labelTV.setBackgroundColor(context.getResources().getColor(R.color.dark_gray_color));
+                    }
                 } else {
                     item.setIsChecked(true);
-                    holder.labelTV.setBackgroundColor(context.getResources().getColor(R.color.light_red_color));
+                    if(onChildClickListener instanceof SearchActivity == false) {
+                        holder.labelTV.setBackgroundColor(context.getResources().getColor(R.color.light_red_color));
+                    }
                 }
                 onChildClickListener.onClick(item);
             }

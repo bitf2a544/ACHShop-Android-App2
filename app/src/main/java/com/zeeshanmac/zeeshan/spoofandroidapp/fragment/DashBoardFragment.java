@@ -6,6 +6,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.zeeshanmac.zeeshan.spoofandroidapp.Auth.MatchTabbedActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity;
 import com.zeeshanmac.zeeshan.spoofandroidapp.R;
+import com.zeeshanmac.zeeshan.spoofandroidapp.adapter.ParentExpandableAdapter;
+import com.zeeshanmac.zeeshan.spoofandroidapp.adapter.DashBoardAdapter;
 import com.zeeshanmac.zeeshan.spoofandroidapp.model.Items;
 import com.zeeshanmac.zeeshan.spoofandroidapp.util.TransparentProgressDialog;
 import com.zeeshanmac.zeeshan.spoofandroidapp.util.Utility;
@@ -40,19 +47,24 @@ import static com.zeeshanmac.zeeshan.spoofandroidapp.MainActivity.selectedItemsL
 
 public class DashBoardFragment extends Fragment implements LocalMessageCallback {
 
-    public  static final int UPDATE_ARTICLES = 101;
-    public  static final int UPDATE_ITEM_SELECTED_LIST = 102;
+    public static final int UPDATE_ARTICLES = 101;
+    public static final int UPDATE_ITEM_SELECTED_LIST = 102;
     @BindView(R.id.articleTVD)
     TextView articleTV;
     @BindView(R.id.shareIVD)
     ImageView shareTextIV;
 
+    @BindView(R.id.recyclerViewD)
+    RecyclerView recyclerView;
+
+    DashBoardAdapter dashBoardAdapter;
     TransparentProgressDialog transparentProgressDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.e("onCreateView","inside_Dash Fragment");
+        Log.e("onCreateView", "inside_Dash Fragment");
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_dash_board, container, false);
         ButterKnife.bind(this, view);
@@ -66,23 +78,6 @@ public class DashBoardFragment extends Fragment implements LocalMessageCallback 
             public void onClick(View view) {
 
                 ((MainActivity) getActivity()).updateFragment("Shopping");
-                // ((YourActivityClassName)getActivity()).yourPublicMethod();
-
-//                final FragmentManager fragmentManager = getFragmentManager();
-//
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//                // Get fragment one if exist.
-//                Fragment fragmentOne = new ShoppingFragment();
-//
-//                fragmentTransaction.replace(R.id.containerFLD, fragmentOne, "ShoppingFragment_1");
-//
-//                // Do not add fragment three in back stack.
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-
-
-
             }
         });
         shareTextIV.setOnClickListener(new View.OnClickListener() {
@@ -109,16 +104,34 @@ public class DashBoardFragment extends Fragment implements LocalMessageCallback 
             }
         });
         getRecordsFromFirebaseDB();
-   //     articleTV.setText(selectedItemsList.size() + " articles");
+        //     articleTV.setText(selectedItemsList.size() + " articles");
 
+        initRecyclerView();
 
-        Log.e("onCreateView","inside_Dash Fragment_1");
+        Log.e("onCreateView", "inside_Dash Fragment_1");
         return view;
+    }
+
+
+    public void initRecyclerView() {
+
+        List<Items> list = new ArrayList<>();
+        list.add(new Items());
+
+        dashBoardAdapter = new DashBoardAdapter(getActivity(), list);
+        recyclerView.setHasFixedSize(true);
+
+        RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(mLayoutManager1);
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(dashBoardAdapter);
+
     }
 
     @Override
     public void onResume() {
-        Log.e("onResume","inside_Dash Fragment_2");
+        Log.e("onResume", "inside_Dash Fragment_2");
         super.onResume();
     }
 
@@ -169,9 +182,8 @@ public class DashBoardFragment extends Fragment implements LocalMessageCallback 
 
     @Override
     public void handleMessage(@NonNull final LocalMessage msg) {
-        switch (msg.getId())
-        {
-            case UPDATE_ARTICLES : {
+        switch (msg.getId()) {
+            case UPDATE_ARTICLES: {
                 articleTV.setText(selectedItemsList.size() + " articles");
             }
             break;

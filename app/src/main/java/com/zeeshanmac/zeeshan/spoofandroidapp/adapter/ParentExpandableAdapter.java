@@ -71,7 +71,7 @@ public class ParentExpandableAdapter extends RecyclerView.Adapter<ParentExpandab
             childListAdapter = new ChildListAdapter(context, item.getChildGroceryItemList(), onChildClickListener);
 
             holder.childRecyclerView.setHasFixedSize(true);
-            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 4);
+            RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(context, 3);
             holder.childRecyclerView.setLayoutManager(mLayoutManager);
             holder.childRecyclerView.addItemDecoration(new DividerItemDecoration(context, LinearLayoutManager.VERTICAL));
             holder.childRecyclerView.setItemAnimator(new DefaultItemAnimator());

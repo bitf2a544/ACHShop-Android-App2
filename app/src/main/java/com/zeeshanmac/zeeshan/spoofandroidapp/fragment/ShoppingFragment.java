@@ -109,7 +109,7 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
         topRecyclerView.setHasFixedSize(true);
 
         // RecyclerView.LayoutManager mLayoutManager1 = new LinearLayoutManager(this);
-        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(getActivity(), 4);
+        RecyclerView.LayoutManager mLayoutManager1 = new GridLayoutManager(getActivity(), 3);
         topRecyclerView.setLayoutManager(mLayoutManager1);
         topRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
         topRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -659,6 +659,11 @@ public class ShoppingFragment extends Fragment implements ChildListAdapter.onChi
 
     public void removeItemFromFireBaseDB(final Items item) {
         if (Utility.isNetworkAvailable(getActivity())) {
+
+            if(item.getKey() == null){
+                Toast.makeText(getActivity(), "Something went wrong (Item key contain null)!", Toast.LENGTH_SHORT).show();
+                return;
+            }
             transparentProgressDialog.show();
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
